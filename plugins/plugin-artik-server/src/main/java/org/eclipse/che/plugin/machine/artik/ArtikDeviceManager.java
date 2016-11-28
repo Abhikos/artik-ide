@@ -31,7 +31,9 @@ import org.eclipse.che.api.core.util.AbstractMessageConsumer;
 import org.eclipse.che.api.core.util.CompositeLineConsumer;
 import org.eclipse.che.api.core.util.FileLineConsumer;
 import org.eclipse.che.api.core.util.LineConsumer;
+import org.eclipse.che.api.core.util.ListLineConsumer;
 import org.eclipse.che.api.core.util.MessageConsumer;
+import org.eclipse.che.api.core.util.ProcessUtil;
 import org.eclipse.che.api.core.util.WebsocketLineConsumer;
 import org.eclipse.che.api.core.util.WebsocketMessageConsumer;
 import org.eclipse.che.api.machine.server.MachineInstanceProviders;
@@ -58,7 +60,6 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.LinkedList;
@@ -70,6 +71,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.lang.Thread.sleep;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.eclipse.che.api.core.model.machine.MachineStatus.RUNNING;
 import static org.eclipse.che.dto.server.DtoFactory.newDto;
@@ -314,11 +316,10 @@ public class ArtikDeviceManager {
         }
         device.connect();
         Instance instance = device.getInstance();
-        if (ArtikDevice.Status.DISCONNECTED.equals(device.getStatus())) {
-            artikTerminalLauncher.launch(instance);
-        } else if (ArtikDevice.Status.ERROR.equals(device.getStatus())) {
+        if (ArtikDevice.Status.ERROR.equals(device.getStatus())) {
             instance = createNewInstance(deviceId, instance);
         }
+        artikTerminalLauncher.launch(instance);
 
         DeviceHealthChecker deviceHealthChecker = checkers.get(deviceId);
         if (deviceHealthChecker != null) {
@@ -326,7 +327,7 @@ public class ArtikDeviceManager {
         } else {
             deviceHealthChecker = new DeviceHealthChecker(device);
             checkers.put(deviceId, deviceHealthChecker);
-            launcher.scheduleWithFixedDelay(deviceHealthChecker, 2L, 10L, SECONDS);
+            launcher.scheduleWithFixedDelay(deviceHealthChecker, 2L, 2L, SECONDS);
         }
 
         return ArtikDtoConverter.asDto(instance);
@@ -350,6 +351,7 @@ public class ArtikDeviceManager {
 
         final ArtikDevice artikDevice = new ArtikDevice(newInstance, CONNECTED);
         instances.put(deviceId, artikDevice);
+        checkers.get(deviceId).setDevice(artikDevice);
 
         return newInstance;
     }
@@ -393,7 +395,7 @@ public class ArtikDeviceManager {
 
             final DeviceHealthChecker deviceHealthChecker = new DeviceHealthChecker(artikDevice);
             checkers.put(deviceId, deviceHealthChecker);
-            launcher.scheduleWithFixedDelay(deviceHealthChecker, 2L, 10L, SECONDS);
+            launcher.scheduleWithFixedDelay(deviceHealthChecker, 2L, 2L, SECONDS);
 
             return ArtikDtoConverter.asDto(instance);
         } catch (ApiException e) {
@@ -556,10 +558,10 @@ public class ArtikDeviceManager {
      * Mechanism for verifying state of the connection to the device.
      */
     private class DeviceHealthChecker implements Runnable {
-        private volatile boolean stop;
-
+        private boolean     stop;
         private ArtikDevice device;
         private String      host;
+        private Integer     port;
 
         public DeviceHealthChecker(ArtikDevice device) {
             this.device = device;
@@ -568,6 +570,7 @@ public class ArtikDeviceManager {
             final String content = device.getInstance().getConfig().getSource().getContent();
             final SshMachineRecipe deviceRecipe = GSON.fromJson(content, SshMachineRecipe.class);
             this.host = deviceRecipe.getHost();
+            this.port = deviceRecipe.getPort();
         }
 
         @Override
@@ -591,18 +594,35 @@ public class ArtikDeviceManager {
             this.stop = true;
         }
 
+        public void setDevice(ArtikDevice device) {
+            this.device = device;
+
+            final String content = device.getInstance().getConfig().getSource().getContent();
+            final SshMachineRecipe deviceRecipe = GSON.fromJson(content, SshMachineRecipe.class);
+            this.host = deviceRecipe.getHost();
+            this.port = deviceRecipe.getPort();
+        }
+
         private void checkConnection(ArtikDevice device) {
+            final ListLineConsumer listLineConsumer = new ListLineConsumer();
             final Instance instance = device.getInstance();
+            final ProcessBuilder processBuilder = new ProcessBuilder("nc", "-vi", "1", host, port.toString());
+
             try {
-                InetAddress address = InetAddress.getByName(host);
-                if (!address.isReachable(5_000)) {
+                ProcessUtil.execute(processBuilder, listLineConsumer);
+
+                sleep(100);
+
+                final String outputText = listLineConsumer.getText();
+                LOG.info(outputText);
+                if (outputText.contains("No route to host") || outputText.contains("Connection refused")) {
                     eventService.publish(newDto(ArtikDeviceStatusEventDto.class)
                                                  .withEventType(ArtikDeviceStatusEventDto.EventType.DISCONNECTED)
                                                  .withDeviceName(instance.getConfig().getName())
                                                  .withDeviceId(instance.getId()));
                     device.setStatus(ERROR);
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 LOG.error(e.getMessage());
             }
         }

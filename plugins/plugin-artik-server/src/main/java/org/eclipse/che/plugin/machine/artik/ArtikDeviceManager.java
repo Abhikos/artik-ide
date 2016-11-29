@@ -351,7 +351,10 @@ public class ArtikDeviceManager {
 
         final ArtikDevice artikDevice = new ArtikDevice(newInstance, CONNECTED);
         instances.put(deviceId, artikDevice);
-        checkers.get(deviceId).setDevice(artikDevice);
+        final DeviceHealthChecker deviceHealthChecker = checkers.get(deviceId);
+        if (deviceHealthChecker != null) {
+            deviceHealthChecker.setDevice(artikDevice);
+        }
 
         return newInstance;
     }
@@ -614,7 +617,6 @@ public class ArtikDeviceManager {
                 sleep(100);
 
                 final String outputText = listLineConsumer.getText();
-                LOG.info(outputText);
                 if (outputText.contains("No route to host") || outputText.contains("Connection refused")) {
                     eventService.publish(newDto(ArtikDeviceStatusEventDto.class)
                                                  .withEventType(ArtikDeviceStatusEventDto.EventType.DISCONNECTED)

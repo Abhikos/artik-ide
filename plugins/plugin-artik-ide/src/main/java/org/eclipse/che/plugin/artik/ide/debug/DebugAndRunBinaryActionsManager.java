@@ -31,7 +31,7 @@ import org.eclipse.che.ide.api.machine.events.WsAgentStateEvent;
 import org.eclipse.che.ide.api.machine.events.WsAgentStateHandler;
 import org.eclipse.che.plugin.artik.ide.ArtikResources;
 import org.eclipse.che.plugin.artik.ide.machine.DeviceServiceClient;
-import org.eclipse.che.plugin.artik.ide.run.RunBinaryAction;
+import org.eclipse.che.plugin.artik.ide.run.RunAction;
 import org.eclipse.che.plugin.artik.ide.run.RunBinaryActionFactory;
 
 import java.util.List;
@@ -125,7 +125,7 @@ public class DebugAndRunBinaryActionsManager implements MachineStateEvent.Handle
 
         debugActionsPopUpGroup.add(debugBinaryAction, Constraints.FIRST);
 
-        RunBinaryAction runBinaryAction = runBinaryActionFactory.create(machine);
+        RunAction runBinaryAction = runBinaryActionFactory.create(machine);
         actionManager.registerAction("run" + machine.getId(), runBinaryAction);
 
         runActionsPopUpGroup.add(runBinaryAction, Constraints.FIRST);
@@ -176,8 +176,8 @@ public class DebugAndRunBinaryActionsManager implements MachineStateEvent.Handle
     }
 
     /**
-     * Action group for placing {@link DebugBinaryAction} and {@link RunBinaryAction} on the toolbar.
-     * It's visible when at least one {@link DebugBinaryAction} or {@link RunBinaryAction} exists.
+     * Action group for placing {@link DebugBinaryAction} and {@link RunAction} on the toolbar.
+     * It's visible when at least one {@link DebugBinaryAction} or {@link RunAction} exists.
      */
     private class DebugAndRunActionsToolbarGroup extends DefaultActionGroup {
 

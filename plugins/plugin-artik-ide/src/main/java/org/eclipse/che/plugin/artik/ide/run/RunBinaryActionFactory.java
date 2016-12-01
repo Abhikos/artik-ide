@@ -14,10 +14,10 @@ package org.eclipse.che.plugin.artik.ide.run;
 import org.eclipse.che.api.core.model.machine.Machine;
 
 /**
- * Factory for {@link RunBinaryAction} instances.
+ * Factory for {@link RunAction} instances.
  *
  * @author Valeriy Svydenko
  */
 public interface RunBinaryActionFactory {
-    RunBinaryAction create(Machine machine);
+    RunAction create(Machine machine);
 }

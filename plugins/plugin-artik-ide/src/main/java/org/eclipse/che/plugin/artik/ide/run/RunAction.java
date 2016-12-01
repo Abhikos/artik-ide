@@ -25,40 +25,51 @@ import org.eclipse.che.plugin.artik.ide.ArtikLocalizationConstant;
 
 import static java.util.Collections.singletonList;
 import static org.eclipse.che.ide.workspace.perspectives.project.ProjectPerspective.PROJECT_PERSPECTIVE_ID;
+import static org.eclipse.che.plugin.cpp.shared.Constants.C_PROJECT_TYPE_ID;
+import static org.eclipse.che.plugin.nodejs.shared.Constants.NODE_JS_PROJECT_TYPE_ID;
 
 /**
  * Action for running binary file.
  *
  * @author Valeriy Svydenko
  */
-public class RunBinaryAction extends AbstractPerspectiveAction {
+public class RunAction extends AbstractPerspectiveAction {
 
     private final AppContext       appContext;
     private final Machine          machine;
+    private final NodeJsRunner     nodeJsRunner;
     private final BinaryFileRunner binaryFileRunner;
 
     @Inject
-    public RunBinaryAction(ArtikLocalizationConstant locale,
-                           AppContext appContext,
-                           @Assisted Machine machine,
-                           BinaryFileRunner binaryFileRunner) {
+    public RunAction(ArtikLocalizationConstant locale,
+                     AppContext appContext,
+                     @Assisted Machine machine,
+                     NodeJsRunner nodeJsRunner,
+                     BinaryFileRunner binaryFileRunner) {
         super(singletonList(PROJECT_PERSPECTIVE_ID), machine.getConfig().getName(), locale.runActionDescription(), null, null);
 
         this.appContext = appContext;
         this.machine = machine;
+        this.nodeJsRunner = nodeJsRunner;
         this.binaryFileRunner = binaryFileRunner;
     }
 
     @Override
     public void updateInPerspective(ActionEvent event) {
-        if (getCurrentProject().isPresent()) {
-            event.getPresentation().setEnabled(true);
-        }
+        final Optional<Project> currentProject = getCurrentProject();
+        event.getPresentation().setEnabled(currentProject.isPresent() && (currentProject.get().isTypeOf(NODE_JS_PROJECT_TYPE_ID) ||
+                                                                          currentProject.get().isTypeOf(C_PROJECT_TYPE_ID)));
     }
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        binaryFileRunner.run(machine);
+        final Project project = getCurrentProject().get();
+
+        if (project.isTypeOf(NODE_JS_PROJECT_TYPE_ID)) {
+            nodeJsRunner.run(machine);
+        } else if (project.isTypeOf(C_PROJECT_TYPE_ID)) {
+            binaryFileRunner.run(machine);
+        }
     }
 
     private Optional<Project> getCurrentProject() {

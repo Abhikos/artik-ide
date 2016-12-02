@@ -14,7 +14,6 @@ package org.eclipse.che.plugin.artik.ide.command.options;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.eclipse.che.api.promises.client.Operation;
 import org.eclipse.che.api.promises.client.OperationException;
 import org.eclipse.che.api.promises.client.Promise;
@@ -22,13 +21,12 @@ import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.project.MutableProjectConfig;
 import org.eclipse.che.ide.api.resources.Project;
 import org.eclipse.che.ide.api.resources.Resource;
-import org.eclipse.che.plugin.artik.ide.command.macro.CompilationPropertiesMacro;
 
 import java.util.Collections;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.eclipse.che.plugin.artik.ide.command.macro.BinaryNameMacro.DEFAULT_BINARY_NAME;
-import static org.eclipse.che.plugin.artik.ide.command.macro.CompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
+import static org.eclipse.che.plugin.artik.ide.command.macro.CCompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
 import static org.eclipse.che.plugin.cpp.shared.Constants.BINARY_NAME_ATTRIBUTE;
 import static org.eclipse.che.plugin.cpp.shared.Constants.COMPILATION_OPTIONS_ATTRIBUTE;
 

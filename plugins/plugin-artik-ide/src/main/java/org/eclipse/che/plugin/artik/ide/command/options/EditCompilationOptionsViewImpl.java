@@ -21,13 +21,12 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.eclipse.che.ide.CoreLocalizationConstant;
 import org.eclipse.che.ide.ui.window.Window;
 import org.eclipse.che.plugin.artik.ide.ArtikLocalizationConstant;
 
 import static org.eclipse.che.plugin.artik.ide.command.macro.BinaryNameMacro.DEFAULT_BINARY_NAME;
-import static org.eclipse.che.plugin.artik.ide.command.macro.CompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
+import static org.eclipse.che.plugin.artik.ide.command.macro.CCompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
 
 /**
  * Implementation of {@link EditCompilationOptionsView}.

@@ -83,7 +83,7 @@ public class AbstractArtikProducerTest extends BaseArtikProducerTest {
     private class DummyArtikProducer extends AbstractArtikProducer {
 
         DummyArtikProducer(String name, CustomCommandType customCommandType, DtoFactory dtoFactory, AppContext appContext) {
-            super(name, customCommandType, dtoFactory, appContext);
+            super(name, "c", customCommandType, dtoFactory, appContext);
         }
 
         @Override

@@ -13,7 +13,6 @@ package org.eclipse.che.plugin.artik.ide.command.macro;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
 import org.eclipse.che.ide.api.app.AppContext;
 
 import static org.eclipse.che.plugin.cpp.shared.Constants.COMPILATION_OPTIONS_ATTRIBUTE;
@@ -24,26 +23,26 @@ import static org.eclipse.che.plugin.cpp.shared.Constants.COMPILATION_OPTIONS_AT
  * @author Artem Zatsarynnyi
  */
 @Singleton
-public class CompilationPropertiesMacro extends ProjectAttributeMacro {
+public class CppCompilationPropertiesMacro extends ProjectAttributeMacro {
 
-    public static final String DEFAULT_COMPILATION_OPTIONS = "$CC -lartik-sdk-base $(for i in $(ls $CPATH)\n" +
+    public static final String DEFAULT_COMPILATION_OPTIONS = "$CXX -lartik-sdk-base $(for i in $(ls $CPATH)\n" +
                                                              "do artik_sdk=-I$CPATH/$i\n" +
                                                              "echo $artik_sdk\n" +
                                                              "done) -lpthread -g";
 
     @Inject
-    public CompilationPropertiesMacro(AppContext appContext) {
+    public CppCompilationPropertiesMacro(AppContext appContext) {
         super(appContext);
     }
 
     @Override
     public String getName() {
-        return "${compilation.options}";
+        return "${cpp.compilation.options}";
     }
 
     @Override
     public String getDescription() {
-        return "provides compilation properties";
+        return "provides C++ compilation properties";
     }
 
     @Override

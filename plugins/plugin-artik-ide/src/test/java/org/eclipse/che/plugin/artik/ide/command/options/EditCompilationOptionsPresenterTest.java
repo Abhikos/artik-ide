@@ -12,7 +12,6 @@
 package org.eclipse.che.plugin.artik.ide.command.options;
 
 import com.google.common.base.Optional;
-
 import org.eclipse.che.api.core.model.project.ProjectConfig;
 import org.eclipse.che.api.core.model.project.SourceStorage;
 import org.eclipse.che.api.promises.client.Operation;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.eclipse.che.plugin.artik.ide.command.macro.BinaryNameMacro.DEFAULT_BINARY_NAME;
-import static org.eclipse.che.plugin.artik.ide.command.macro.CompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
+import static org.eclipse.che.plugin.artik.ide.command.macro.CCompilationPropertiesMacro.DEFAULT_COMPILATION_OPTIONS;
 import static org.eclipse.che.plugin.cpp.shared.Constants.BINARY_NAME_ATTRIBUTE;
 import static org.eclipse.che.plugin.cpp.shared.Constants.COMPILATION_OPTIONS_ATTRIBUTE;
 import static org.hamcrest.CoreMatchers.containsString;

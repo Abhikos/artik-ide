@@ -12,7 +12,6 @@
 package org.eclipse.che.plugin.artik.ide.command;
 
 import com.google.common.base.Optional;
-
 import org.eclipse.che.api.core.model.machine.Machine;
 import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.command.CommandImpl;
@@ -34,9 +33,11 @@ public abstract class AbstractArtikProducer implements CommandProducer {
     protected final AppContext        appContext;
 
     private final String name;
+    private String projectType;
 
-    protected AbstractArtikProducer(String name, CustomCommandType customCommandType, DtoFactory dtoFactory, AppContext appContext) {
+    protected AbstractArtikProducer(String name, String projectType, CustomCommandType customCommandType, DtoFactory dtoFactory, AppContext appContext) {
         this.name = name;
+        this.projectType = projectType;
         this.customCommandType = customCommandType;
         this.dtoFactory = dtoFactory;
         this.appContext = appContext;
@@ -57,7 +58,7 @@ public abstract class AbstractArtikProducer implements CommandProducer {
         Resource resource = selectedResource.get();
         Optional<Project> projectOptional = resource.getRelatedProject();
 
-        return projectOptional.isPresent() && projectOptional.get().isTypeOf("c");
+        return projectOptional.isPresent() && projectOptional.get().isTypeOf(projectType);
 
     }
 

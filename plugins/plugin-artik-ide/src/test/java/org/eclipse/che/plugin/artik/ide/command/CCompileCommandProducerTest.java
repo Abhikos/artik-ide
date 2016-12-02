@@ -15,8 +15,8 @@ import org.eclipse.che.api.core.model.machine.Machine;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.eclipse.che.plugin.artik.ide.command.CompileCommandProducer.COMMAND_NAME;
-import static org.eclipse.che.plugin.artik.ide.command.CompileCommandProducer.COMMAND_TEMPLATE;
+import static org.eclipse.che.plugin.artik.ide.command.CCompileCommandProducer.COMMAND_NAME;
+import static org.eclipse.che.plugin.artik.ide.command.CCompileCommandProducer.COMMAND_TEMPLATE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,19 +25,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link CompileCommandProducer}.
+ * Tests for {@link CCompileCommandProducer}.
  *
  * @author Artem Zatsarynnyi
  */
-public class CompileCommandProducerTest extends BaseArtikProducerTest {
+public class CCompileCommandProducerTest extends BaseArtikProducerTest {
 
-    private CompileCommandProducer producer;
+    private CCompileCommandProducer producer;
 
     @Before
     public void setUp() {
         super.setUp();
 
-        producer = new CompileCommandProducer(customCommandType, dtoFactory, appContext);
+        producer = new CCompileCommandProducer(customCommandType, dtoFactory, appContext);
     }
 
     @Test
